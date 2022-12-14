@@ -4,6 +4,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
 from django.contrib.auth.decorators import login_required
+from django.contrib import messages
 
 from .models import *
 
@@ -39,64 +40,61 @@ def create_listing(request):
 def listing(request, id):
 
     listing = Auctions.objects.get(pk=id)
-    user = request.user,
     bids = Bids.objects.filter(auction=id)
     highestbid = Bids.objects.filter(auction=id).order_by("-amount").first()
-    if bids.count() == 0:
-        currentprice = listing.price
-    else:
-        currentprice = highestbid.amount
 
     if listing.active == False:
-        if user == highestbid.bidder:
-            message
-            return
+        if request.user == highestbid.bidder:
+            return render(request, "auctions/bought.html", {
+                "listing" : listing,
+                "bids" : bids,
+            })
+
+    watchlistitem = Watchlist.objects.filter(auction=id, user=request.user)
 
     return render(request, "auctions/listing.html", {
         "listing" : listing,
         # "user" : user,
         "bids" : bids,
         "comments" : Comments.objects.filter(auction=id),
-        "currentprice" : listing.price,
-        "watchlist": Watchlist.objects.filter(auction=id)
+        "watchlist": Watchlist.objects.filter(auction=id),
+        "user": request.user,
+        "watchlistitem" : watchlistitem
     })
 
 
 @login_required
 def bidorclose(request, id):
 
-    listing = Auctions.objects.get(pk=id)
-    highestbid = Bids.objects.filter(auction=id).order_by("-amount").first()
+    auction = Auctions.objects.get(pk=id)
 
-    if request.user == listing.seller:
+    if request.user == auction.seller:
         if request.method == "POST":
-            listing.active = False
-            lsiting.save()
+            auction.active = False
+            auction.save()
     else:
         if request.method == "POST":
             bid = request.POST["bid"]
-            if bid > highestbid.amount:
+            if float(bid) > auction.price:
                 NewBid = Bids(
-                    amount = bid,
-                    user = request.user
+                    amount = float(bid),
+                    bidder = request.user
                 )
                 NewBid.save()
-                listing.price = bid
-                listing.save()
-                highestbid = bid
+                auction.price = float(bid)
+                auction.save()
+                print(auction)
 
     return listing(request, id)
 
 @login_required
 def comment(request, id):
 
-    listing = Auctions.objects.get(pk=id)
-
     if request.method == "POST":
         NewComment = Comments(
             post = request.POST["comment"],
             user = request.user,
-            auction = listing.id
+            auction = Auctions.objects.get(pk=id)
         )
         NewComment.save()
 
@@ -105,18 +103,19 @@ def comment(request, id):
 @login_required
 def watchlist(request, id):
 
-    userwatchlist = Watchlist.objects.filter(user=request.user)
+    watchlistitem = Watchlist.objects.filter(auction=id, user=request.user)
+
     if request.method == "POST":
-        if id in userwatchlist.auction:
-            userwatchlist.get(auction=id).delete()
+        if watchlistitem:
+            watchlistitem.delete()
         else:
             NewWatchlist = Watchlist(
-                auction = id
+                auction = Auctions.objects.get(pk=id),
+                user = request.user
             )
             NewWatchlist.save()
 
     return listing(request, id)
-
 
 def login_view(request):
 

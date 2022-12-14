@@ -4,11 +4,11 @@
   <div class="Watchlist">
     <form action="{% url 'watchlist' id=listing.id %}" method="POST">
       {% csrf_token %}
-      {% if not id == watchlist.auction %}
-        <input type="submit" value="Add to Watchlist">
-      {% else %}
-        <input type="submit" value="Remove from watchlist">
-      {% endif %}
+          {% if watchlistitem %}
+            <input type="submit" value="Remove from watchlist">
+          {% else %}
+            <input type="submit" value="Add to Watchlist">
+          {% endif %}
     </form>
   </div>
   <br>
@@ -17,10 +17,10 @@
       <img src="{{ listing.photo }}" height=200>
     {% endif %}
   </div>
-  
+
   <h2> {{ listing.title }} - {{ listing.category }} </h2>
   <div class="info">
-    <h4> Price: €{{ currentprice }}</h4>
+    <h4> Price: €{{ listing.price }}</h4>
     <h5> Description </h5>
     <p> {{ listing.description }} </p>
     <p> Sold by: {{ listing.seller }} </p>
@@ -35,7 +35,7 @@
     {% else %}
       <form action="{% url 'bidorclose' id=listing.id %}" method="POST">
         {% csrf_token %}
-        <input type="number" name="bid" min="{{ currentprice }}">
+        <input type="number" name="bid" min="{{ listing.price }}">
         <input type="submit" value="Bid">
       </form>
     {% endif %}
@@ -48,9 +48,9 @@
       <input type="text" name="comment">
       <input type="submit" value="Post">
     </form>
+    <br>
     {% for comment in comments %}
-      <h6> {{ comment.user }} </h6>
-      <p> {{ comment.post }} </p>
+      <p> <strong>{{ comment.user }}</strong>: {{comment.post}} </p>
     {% endfor %}
   </div>
 {% endblock %}

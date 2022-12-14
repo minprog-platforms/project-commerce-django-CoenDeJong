@@ -22,13 +22,13 @@ class Auctions(models.Model):
     active = models.BooleanField(default = True)
 
     def __str__(self):
-        return f"{self.title}"
+        return f"{self.id}: {self.title}"
 
 
 class Bids(models.Model):
-    amount = models.DecimalField(max_digits = 12, decimal_places = 2)
+    amount = models.DecimalField(max_digits = 12, decimal_places = 2, null = True)
     bidder = models.ForeignKey(User, on_delete = models.CASCADE)
-    auction = models.ForeignKey(Auctions, on_delete = models.CASCADE)
+    auction = models.ForeignKey(Auctions, on_delete = models.CASCADE, null = True)
     datetime = models.DateTimeField(auto_now_add = True)
 
     def __str__(self):
@@ -42,7 +42,7 @@ class Comments(models.Model):
     datetime = models.DateTimeField(auto_now_add = True)
 
     def __str__(self):
-        return f"{self.user1}: {self.post} on {self.datetime} in {self.auction}"
+        return f"{self.user}: {self.post} on {self.datetime} in {self.auction}"
 
 
 class Watchlist(models.Model):
