@@ -2,6 +2,16 @@
 
 {% block body %}
     <h2>Active Listings</h2>
-
-    TODO
+    <br>
+    {% for listing in listings %}
+      <a href="{% url 'listing' id=listing.id %}">
+        <img src="{{ listing.photo }}" height=200>
+      </a>
+      <div>
+        <h4> {{ listing.title }} </h4>
+        <h5> €{{ listing.price }} </h5>
+        <h6> {{ listing.description }} </h6>
+      </div>
+      <br>
+    {% endfor %}
 {% endblock %}
