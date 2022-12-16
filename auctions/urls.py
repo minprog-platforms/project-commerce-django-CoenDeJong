@@ -1,4 +1,5 @@
 from django.urls import path
+from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 
 from . import views
 
@@ -12,5 +13,6 @@ urlpatterns = [
     path("<int:id>", views.bidorclose, name="bidorclose"),
     path("<int:id>/comment", views.comment, name="comment"),
     path("<int:id>/watchlist", views.watchlist, name="watchlist"),
-    path("bought", views.listing, name="bought")
+    path("bought", views.listing, name="bought"),
+    path("listing/<int:id>/notloggedin", views.listing_nologin, name="notloggedin")
 ]

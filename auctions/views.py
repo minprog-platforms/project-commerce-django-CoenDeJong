@@ -15,6 +15,14 @@ def index(request):
         "listings" : Auctions.objects.filter(active=True)
     })
 
+def listing_nologin(request, id):
+    listing = Auctions.objects.get(pk=id)
+
+    return render(request, "auctions/notloggedin.html", {
+        "listing" : listing,
+        "comments" : Comments.objects.filter(auction=id)
+    })
+
 @login_required
 def create_listing(request):
 
@@ -23,12 +31,15 @@ def create_listing(request):
             "categories" : Categories.objects.all()
         })
 
+    cat = request.POST["category"]
+    print(cat)
+
     NewListing = Auctions(
         title = request.POST["title"],
         description = request.POST["description"],
         price = float(request.POST["price"]),
         photo = request.POST["photo"],
-        category = request.POST["category"],
+        category = Categories.objects.get(category=cat),
         seller = request.user,
     )
 
