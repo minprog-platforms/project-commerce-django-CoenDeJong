@@ -3,15 +3,24 @@
 {% block body %}
     <h2>Active Listings</h2>
     <br>
-    {% for listing in listings %}
-      <a href="{% url 'listing' id=listing.id %}">
-        <img src="{{ listing.photo }}" height=200>
-      </a>
-      <div>
-        <h4> {{ listing.title }} </h4>
-        <h5> €{{ listing.price }} </h5>
-        <h6> {{ listing.description }} </h6>
-      </div>
-      <br>
-    {% endfor %}
+    <div id="flex">
+      {% for listing in listings %}
+        <div class="listing">
+          {% if user.is_authenticated %}
+            <a href="{% url 'listing' id=listing.id %}">
+              <img src="{{ listing.photo }}" height=200>
+            </a>
+          {% else %}
+            <a href="{% url 'notloggedin' id=listing.id %}">
+              <img src="{{ listing.photo }}" height=200>
+            </a>
+          {% endif %}
+          <div class="preview">
+            <h4> {{ listing.title }} </h4>
+            <h5> €{{ listing.price }} </h5>
+            <h6> {{ listing.description }} </h6>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
 {% endblock %}

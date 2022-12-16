@@ -5,15 +5,20 @@
 
   <form  action="{% url 'create' %}" method="post">
     {% csrf_token %}
-    <input type="text" name="title" placeholder="Title">
-    <input type="text" name="description" placeholder="Description">
-    <input type="number" name="price" placeholder="Price">
-    <input type="url" name="photo" placeholder="Photo URL">
-    <select name="category">
+    <input class="create" type="text" name="title" placeholder="Title">
+    <br>
+    <input class="create" type="text" name="description" placeholder="Description">
+    <br>
+    <input class="create" type="number" name="price" placeholder="Price">
+    <br>
+    <input class="create" type="url" name="photo" placeholder="Photo URL">
+    <br>
+    <select id="dropdown" name="category">
       {% for category in categories %}
-        <option value="category"> {{ category }} </option>
+        <option value="{{category}}"> {{ category }} </option>
       {% endfor %}
     </select>
-    <input type="submit" value="Create">
+    <br>
+    <input class="button" type="submit" value="Create">
   </form>
 {% endblock %}

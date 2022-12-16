@@ -5,48 +5,53 @@
     <form action="{% url 'watchlist' id=listing.id %}" method="POST">
       {% csrf_token %}
           {% if watchlistitem %}
-            <input type="submit" value="Remove from watchlist">
+            <input class="button" type="submit" value="Remove from watchlist">
           {% else %}
-            <input type="submit" value="Add to Watchlist">
+            <input class="button" type="submit" value="Add to Watchlist">
           {% endif %}
     </form>
-  </div>
-  <br>
-  <div class="photo">
-    {% if listing.photo %}
-      <img src="{{ listing.photo }}" height=200>
-    {% endif %}
+  <div>
+
+  <div class="auction">
+    <br>
+    <div class="photo">
+      {% if listing.photo %}
+        <img src="{{ listing.photo }}">
+      {% endif %}
+    </div>
+
+    <div class="info">
+      <h2> {{ listing.title }} - {{ listing.category }} </h2>
+      <h4> Price: €{{ listing.price }}</h4>
+      <h5> Description </h5>
+      <p> {{ listing.description }} </p>
+      <p> Sold by: {{ listing.seller }} </p>
+
+
+
+
+      {% if user == listing.seller %}
+        <form action="{% url 'bidorclose' id=listing.id %}" method="POST">
+          {% csrf_token %}
+          <input class="button" type="submit" value="Close">
+        </form>
+      {% else %}
+        <form action="{% url 'bidorclose' id=listing.id %}" method="POST">
+          {% csrf_token %}
+          <input type="number" name="bid" min="{{ listing.price }}">
+          <input type="submit" class="button" value="Bid">
+        </form>
+      {% endif %}
+    </div>
   </div>
 
-  <h2> {{ listing.title }} - {{ listing.category }} </h2>
-  <div class="info">
-    <h4> Price: €{{ listing.price }}</h4>
-    <h5> Description </h5>
-    <p> {{ listing.description }} </p>
-    <p> Sold by: {{ listing.seller }} </p>
-  </div>
 
-  <div class="closebid">
-    {% if user == listing.seller %}
-      <form action="{% url 'bidorclose' id=listing.id %}" method="POST">
-        {% csrf_token %}
-        <input type="submit" value="Close">
-      </form>
-    {% else %}
-      <form action="{% url 'bidorclose' id=listing.id %}" method="POST">
-        {% csrf_token %}
-        <input type="number" name="bid" min="{{ listing.price }}">
-        <input type="submit" value="Bid">
-      </form>
-    {% endif %}
-  </div>
-  <br>
   <div class="commentsection">
     <h3> Comments </h3>
     <form action="{% url 'comment' id=listing.id %}" method="POST">
       {% csrf_token %}
       <input type="text" name="comment">
-      <input type="submit" value="Post">
+      <input class="button" type="submit" value="Post">
     </form>
     <br>
     {% for comment in comments %}
